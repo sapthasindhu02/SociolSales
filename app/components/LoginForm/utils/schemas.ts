@@ -3,8 +3,8 @@ import { z } from 'zod';
 import { validatePhoneNumber } from './validations';
 
 const phoneNumberSchema = z.object({
-    countryCode: z.string(),
-    phoneNumber: z.string()
+    countryCode: z.string().min(2, "Country code is required"),
+    phoneNumber: z.string().min(10, "Phone number must be at least 10 digits long"),
   }).superRefine((data,context) => {
     const countryCode = data.countryCode;
     const phoneNumber = data.phoneNumber;
