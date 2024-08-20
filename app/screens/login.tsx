@@ -1,5 +1,6 @@
 import { View } from "react-native";
-import { LoginModel } from "../components/LoginForm/loginForm";
+import { LoginModel } from "../components/loginForm";
+import { OTPModel } from "../components/otpForm";
 
 
 
@@ -7,4 +8,5 @@ import { LoginModel } from "../components/LoginForm/loginForm";
 
 <View>
     <LoginModel/>
+    <OTPModel/>
 </View>

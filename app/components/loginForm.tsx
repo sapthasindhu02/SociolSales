@@ -1,10 +1,14 @@
 import { Controller, useForm } from 'react-hook-form';
-import { Button, Text } from "react-native";
+import { Button, Text, TouchableOpacity } from "react-native";
 import PhoneInput from 'react-native-phone-input'
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
-import { phoneNumberSchemaType, usePhoneNumberSchema } from './utils/Schemas';
+import { phoneNumberSchemaType, usePhoneNumberSchema } from '@/app/utils/login/schemas';
+import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
+import { sendVerification } from '@/app/utils/login/otp';
+import { useRef, useState } from 'react';
 export const LoginModel = () => {
+    const [uerInputCode, setUerInputCode] = useState();
+    const [verificationId, setVerificationId] = useState();
     const schemaToUse = usePhoneNumberSchema();
     const { control, handleSubmit, formState } = useForm<phoneNumberSchemaType>({
         resolver: zodResolver(schemaToUse),
@@ -15,9 +19,17 @@ export const LoginModel = () => {
         });
     const {errors} = formState;
     const countryCode = watch('countryCode');
-
-    const onSubmit = (data:phoneNumberSchemaType) => {
-        sendOTP(data);
+    const recaptchaVerifier = useRef<FirebaseRecaptchaVerifierModal | null>(null);
+    
+    const onSubmit = async (data:phoneNumberSchemaType) => {
+      const {phoneNumber} = data;
+      const otpSent = await sendVerification(phoneNumber,recaptchaVerifier.current);
+      if (otpSent) {
+        setVerificationId(otpSent);
+      } else {
+        console.error("No verification ID received.");
+        // Display user-friendly error message or handle as needed
+      }
     }
 
     return (
@@ -48,5 +60,8 @@ export const LoginModel = () => {
                     <Text style={{ color: 'blue' }}>Signup</Text>
             </TouchableOpacity>
         </Text>
+        <FirebaseRecaptchaVerifierModal
+        ref={recaptchaVerifier}
+      />
     </div>);
 };
