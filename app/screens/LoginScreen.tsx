@@ -1,16 +1,20 @@
+import React, { useCallback } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Button, Text, TouchableOpacity } from "react-native";
+import { Button, Text, TouchableOpacity, View } from "react-native";
 import PhoneInput from 'react-native-phone-input'
+import CountryPicker from 'react-native-country-picker-modal';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { phoneNumberSchemaType, usePhoneNumberSchema } from '@/app/utils/login/schemas';
 import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
-import { sendVerification } from '@/app/utils/login/otp';
-import { useRef, useState } from 'react';
-export const LoginModel = () => {
-    const [uerInputCode, setUerInputCode] = useState();
-    const [verificationId, setVerificationId] = useState();
+import { resendOTPCode, sendVerification } from '@/app/utils/login/otpVerification';
+import { useRef } from 'react';
+import { LoginModelProps } from '../utils/types';
+import Snackbar from 'react-native-snackbar';
+import { ToastMessage } from '../utils/UI';
+
+export const LoginModel = React.memo<LoginModelProps>(({navigation,setVerificationId}) => {
     const schemaToUse = usePhoneNumberSchema();
-    const { control, handleSubmit, formState } = useForm<phoneNumberSchemaType>({
+    const { control, handleSubmit, formState, watch, setValue } = useForm<phoneNumberSchemaType>({
         resolver: zodResolver(schemaToUse),
         defaultValues: {
             phoneNumber: '',
@@ -21,19 +25,27 @@ export const LoginModel = () => {
     const countryCode = watch('countryCode');
     const recaptchaVerifier = useRef<FirebaseRecaptchaVerifierModal | null>(null);
     
-    const onSubmit = async (data:phoneNumberSchemaType) => {
+    const onSubmit = useCallback(async (data:phoneNumberSchemaType) => {
       const {phoneNumber} = data;
+      try{
       const otpSent = await sendVerification(phoneNumber,recaptchaVerifier.current);
       if (otpSent) {
-        setVerificationId(otpSent);
+        await setVerificationId(otpSent);
+        navigation.navigate('OTP',{phoneNumber});
+        ToastMessage('OPT Sent!','orange');
       } else {
-        console.error("No verification ID received.");
-        // Display user-friendly error message or handle as needed
+        await resendOTPCode(phoneNumber);
+        ToastMessage('OPT Resent!','orange');
       }
-    }
+      }
+      catch(error){
+        ToastMessage('Internal Server Error. Please try again later','Red');
+      }
+      
+    },[navigation]);
 
     return (
-    <div>
+    <View>
         <Text>Login</Text>
         <CountryPicker
         countryCode={countryCode}
@@ -63,5 +75,5 @@ export const LoginModel = () => {
         <FirebaseRecaptchaVerifierModal
         ref={recaptchaVerifier}
       />
-    </div>);
-};
+    </View>);
+});
