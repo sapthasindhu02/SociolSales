@@ -30,5 +30,10 @@ const phoneNumberSchema = z.object({
 export const usePhoneNumberSchema = () => {
   return useMemo(() => phoneNumberSchema, []);
 };
-export type phoneNumberSchemaType = z.infer<typeof phoneNumberSchema>;
 
+const otpSchema = z.object({
+  verificationCode: z.string(),
+});
+
+export type phoneNumberSchemaType = z.infer<typeof phoneNumberSchema>;
+export type OTPSchemaType = z.infer<typeof otpSchema>;
