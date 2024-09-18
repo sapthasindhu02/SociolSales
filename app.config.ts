@@ -45,5 +45,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       appId: process.env.FIREBASE_APP_ID,
       measurementId: process.env.FIREBASE_MEASUREMENT_ID,
     },
+    aws: {
+      apiKey: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      region: process.env.REGION,
+    }
   },
 });

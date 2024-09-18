@@ -1,25 +1,25 @@
 import { ParamListBase, RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 
-export type RootStackParamList = {
+type RootStackParamList = {
     Login: undefined;
     OTP: { phoneNumber: string };
     HomeScreen: undefined;
-  };
+    PhoneScreen: undefined;
+    SareesArrangement: undefined;
+};
 
-type OTPModelNavigationProp = StackNavigationProp<RootStackParamList, 'OTP'>;
-type OTPModelRouteProp = RouteProp<RootStackParamList, 'OTP'>;
-type LoginModelNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
-type LoginModelRouteProp = RouteProp<RootStackParamList, 'Login'>;
+type ScreenProps<T extends keyof RootStackParamList> = {
+    navigation: StackNavigationProp<RootStackParamList, T>;
+    route: RouteProp<RootStackParamList, T>;
+};
 
-export interface OTPModelProps {
-    navigation: OTPModelNavigationProp;
-    route: OTPModelRouteProp;
+export interface OTPModelProps extends ScreenProps<'OTP'> {
     verificationId: string;
 }
-
-export interface LoginModelProps {
-    navigation: LoginModelNavigationProp;
-    route: LoginModelRouteProp;
+export interface LoginModelProps extends ScreenProps<'Login'> {
     setVerificationId: any;
 }
+export interface HomeScreenProps extends ScreenProps<'HomeScreen'> { }
+export interface SareesArrangementProps extends ScreenProps<'SareesArrangement'> { }
+export interface ProfileScreenProps extends ScreenProps<'PhoneScreen'> { }

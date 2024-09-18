@@ -6,11 +6,10 @@ import CountryPicker from 'react-native-country-picker-modal';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { phoneNumberSchemaType, usePhoneNumberSchema } from '@/app/utils/login/schemas';
 import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
-import { resendOTPCode, sendVerification } from '@/app/utils/login/otpVerification';
 import { useRef } from 'react';
 import { LoginModelProps } from '../utils/types';
-import Snackbar from 'react-native-snackbar';
 import { ToastMessage } from '../utils/UI';
+import { resendOTPCode, sendVerification } from '../utils/login/firebaseAuth';
 
 export const LoginModel = React.memo<LoginModelProps>(({navigation,setVerificationId}) => {
     const schemaToUse = usePhoneNumberSchema();
